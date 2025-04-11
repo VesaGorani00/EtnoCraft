@@ -1,4 +1,4 @@
-import { PRODUCTS_URL , UPLOAD_URL} from "../constants.js";
+import { PRODUCT_MERCHANTS_URL, PRODUCTS_URL , UPLOAD_URL} from "../constants.js";
 import { apiSlice } from "./apiSlice.js";
 
 export const productsApiSlice = apiSlice.injectEndpoints({
@@ -29,9 +29,24 @@ export const productsApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags:["Product"]
         }),
+        createMerchantProduct: builder.mutation({
+            query: () =>({
+                url:PRODUCT_MERCHANTS_URL,
+                method:"POST"
+            }),
+            invalidatesTags:["Product"]
+        }),
         updateProduct:builder.mutation({ 
             query:(data) => ({
                 url: `${PRODUCTS_URL}/${data.productId}`,
+                method:"PUT",
+                body:data,
+            }),
+            invalidatesTags:["Products"]
+        }),
+        updateMerchantProduct:builder.mutation({ 
+            query:(data) => ({
+                url: `${PRODUCT_MERCHANTS_URL}/${data.productId}`,
                 method:"PUT",
                 body:data,
             }),
@@ -48,6 +63,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         deleteProduct: builder.mutation({
             query: (productId) => ({
                 url: `${PRODUCTS_URL}/${productId}`,
+                method: 'DELETE'
+            }),
+        }),
+        
+        deleteMerchantProduct: builder.mutation({
+            query: (productId) => ({
+                url: `${PRODUCT_MERCHANTS_URL}/${productId}`,
                 method: 'DELETE'
             }),
         }),
@@ -68,7 +90,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         //////////
         getMerchantProducts: builder.query({
             query: ({ pageNumber, keyword }) => ({
-                url: PRODUCTS_URL + '/merchant',
+                url: PRODUCT_MERCHANTS_URL,
                 params: {
                     pageNumber,
                     keyword,
@@ -91,4 +113,7 @@ export const {
      useGetTopProductsQuery,
      ////
      useGetMerchantProductsQuery,
+     useCreateMerchantProductMutation,
+     useUpdateMerchantProductMutation,
+     useDeleteMerchantProductMutation,
     } = productsApiSlice;

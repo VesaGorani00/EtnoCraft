@@ -45,5 +45,14 @@ const merchant = (req, res, next) => {
     }
 };
 
+const writeRoles = (req, res, next) => {
+    if (req.user && (req.user.isAdmin || req.user.isMerchant) ) {
+        next();
+    } else {
+        res.status(401);
+        throw new Error('Not authorized.');
+    }
+};
 
-export { protect, admin, merchant };
+
+export { protect, admin, merchant, writeRoles };

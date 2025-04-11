@@ -38,7 +38,16 @@ const PlaceOrderScreen = () => {
                 totalPrice: cart.totalPrice,
             }).unwrap()
             dispatch(clearCartItems())
-            navigate(`/order/${res._id}`)
+
+            let ids = res.join(",")
+            
+            res.forEach(id => {        
+                setTimeout(function(){
+                    window.open(`http://localhost:3000/order/${id}`, '_blank')   
+                }, 500);
+            });
+
+            // navigate(`/order/${ids}`) 
         } catch (error) {
             toast.error(error)
         }

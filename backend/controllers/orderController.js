@@ -1,6 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js'
 import Order from "../models/orderModel.js"
-
+import jwt from 'jsonwebtoken'
 
 // Create new order
 // @Route Post /api/orders
@@ -11,34 +11,44 @@ const addOrderItems = asyncHandler(async (req, res ) => {
         orderItems,
         shippingAddress,
         paymentMethod,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice
     }=req.body
 
     if(orderItems && orderItems.length === 0){
         res.status(400)
         throw new Error ("No order items")
     }else{
-        const order = new Order({
-            orderItems: orderItems.map((x) => ({
-                ...x,
-                product: x._id,
+        
+        let orderIds = []
+
+        for (let i = 0; i < orderItems.length; i++){
+            const orderItem = orderItems[i]
+            const item = {
+                ...orderItem,
+                product: orderItem._id,
                 _id:undefined
-            })),
-            user: req.user._id,
-            shippingAddress,
-            paymentMethod,
-            itemsPrice,
-            taxPrice,
-            shippingPrice,
-            totalPrice
-        })
+            }
 
-        const createOrder = await order.save()
+            const itemsPrice = orderItem.price * orderItem.qty
+            const taxPrice = itemsPrice * 0.15
+            const shippingPrice = 10
+            const totalPrice = itemsPrice + taxPrice + shippingPrice
 
-        res.status(201).json(createOrder)
+            const order = new Order({
+                orderItems: [item],
+                user: req.user._id,
+                shippingAddress,
+                paymentMethod,
+                itemsPrice,
+                taxPrice,
+                shippingPrice,
+                totalPrice
+            })
+    
+            const createOrder = await order.save()   
+            orderIds.push(createOrder._id) 
+        }
+
+        res.status(201).json(orderIds)
     }
 })
 
@@ -122,6 +132,12 @@ const getOrders = asyncHandler(async (req, res ) => {
     res.status(200).json(orders)
 })
 
+const getMerchantOrders = asyncHandler(async (req, res ) => {
+    const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+
+    const orders = await Order.find({user: decoded.userId}).populate("user","id name")
+    res.status(200).json(orders)
+})
 
 
 export {
@@ -130,6 +146,7 @@ export {
     getOrderById,
     updateOrderToDelivered,
     updateOrderToPaid,
-    getOrders
+    getOrders,
+    getMerchantOrders
 
 }

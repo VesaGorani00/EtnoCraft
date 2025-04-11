@@ -4,10 +4,10 @@ import {Table, Button} from "react-bootstrap"
 import {FaTimes} from "react-icons/fa"
 import Message from "../../components/Message.js"
 import Loader from "../../components/Loader.js"
-import { useGetOrdersQuery } from '../../slices/ordersApiSlice.js'
+import { useGetMerchantOrdersQuery } from '../../slices/ordersApiSlice.js'
 
 const MerchantOrderListScreen = () => {
-  const {data:orders, isLoading, error} = useGetOrdersQuery()
+  const {data:orders, isLoading, error} = useGetMerchantOrdersQuery()
 
   return (
     <>

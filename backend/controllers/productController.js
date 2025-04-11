@@ -1,6 +1,6 @@
 import asyncHandler from '../middleware/asyncHandler.js'
 import Product from "../models/productModel.js"
-
+import  jwt  from "jsonwebtoken";
 
 // Fetch all products
 // @Route GET /api/products
@@ -61,9 +61,9 @@ const CreateProduct = asyncHandler(async (req, res ) => {
 
 const updateProduct = asyncHandler(async (req, res ) => {
     const {name, price, description, image, brand,category,countInStock} = req.body
-
-    const product = await Product.findById(req.params.id)
-
+    const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+    const product = await Product.findOne({user: decoded.userId, _id: req.params.id})
+    
     if(product){
         product.name = name
         product.price = price
@@ -88,7 +88,10 @@ const updateProduct = asyncHandler(async (req, res ) => {
 
 
 const deleteProduct = asyncHandler(async (req, res ) => {
-    const product = await Product.findById(req.params.id)
+    
+    const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+    
+    const product = await Product.findOne({user: decoded.userId, _id: req.params.id})
 
     if(product){
       await Product.deleteOne({_id: product._id});
@@ -151,8 +154,10 @@ const getTopProducts = asyncHandler(async (req, res) => {
 });
 
 const getMerchantProducts = asyncHandler(async (req, res) => {
-    console.log(req.user._id)
-    const products = await Product.find({ user: req.user._id });
+    
+    const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+    
+    const products = await Product.find({ user: decoded.userId });
     res.json(products);
 });
 

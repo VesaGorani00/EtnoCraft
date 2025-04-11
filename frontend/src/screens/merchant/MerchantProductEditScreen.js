@@ -5,7 +5,7 @@ import Message from '../../components/Message.js'
 import Loader from '../../components/Loader.js'
 import FormContainer from '../../components/FormContainer.js'
 import {toast} from "react-toastify"
-import { useUpdateProductMutation,useGetProductDetailsQuery, useUploadProductImageMutation} from '../../slices/productsApiSlice.js'
+import { useUpdateMerchantProductMutation,useGetProductDetailsQuery, useUploadProductImageMutation} from '../../slices/productsApiSlice.js'
 
 const MerchantProductEditScreen = () => {
     const {id:productId} = useParams()
@@ -20,7 +20,7 @@ const MerchantProductEditScreen = () => {
 
     const {data:product, isLoading, error} =useGetProductDetailsQuery(productId) 
 
-    const [updateProduct, {isLoading:loadingUpdate}] = useUpdateProductMutation()
+    const [updateProduct, {isLoading:loadingUpdate}] = useUpdateMerchantProductMutation()
 
     const [uploadProductImage, {isLoading:loadingUpload}] = useUploadProductImageMutation();
 

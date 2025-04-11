@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import Message from "../../components/Message.js"
 import Loader from "../../components/Loader.js"
 import Paginate from '../../components/Paginate.js'
-import { useCreateProductMutation, useDeleteProductMutation, useGetMerchantProductsQuery } from '../../slices/productsApiSlice.js'
+import { useCreateMerchantProductMutation, useDeleteMerchantProductMutation, useGetMerchantProductsQuery } from '../../slices/productsApiSlice.js'
 import { toast } from 'react-toastify'
 
 const MerchantProductListScreen = () => {
@@ -17,9 +17,9 @@ const MerchantProductListScreen = () => {
         pageNumber,
     })
 
-    const [createProduct, {isLoading:loadingCreate}] = useCreateProductMutation()
+    const [createProduct, {isLoading:loadingCreate}] = useCreateMerchantProductMutation()
 
-    const [deleteProduct, {isLoading: loadingDelete}] = useDeleteProductMutation()
+    const [deleteProduct, {isLoading: loadingDelete}] = useDeleteMerchantProductMutation()
     
     const deleteHandler =  async (id) => {
         if(window.confirm('Are you sure?')){
@@ -75,7 +75,7 @@ const MerchantProductListScreen = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.products.map((product) => (
+                        {data.map((product) => (
                             <tr key={product._id}>
                                 <td>{product._id}</td>
                                 <td>{product.name}</td>
