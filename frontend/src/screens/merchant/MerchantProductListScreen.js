@@ -48,7 +48,7 @@ const MerchantProductListScreen = () => {
     <>
         <Row className='align-items-center'>
             <Col>
-                <h1>Products</h1>
+                <h1 className='mt-5'>Products</h1>
             </Col>
             <Col className='text-end'>
                 <Button className='btn-sm m-3'

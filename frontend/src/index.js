@@ -27,6 +27,7 @@ import PlaceOrderScreen from './screens/PlaceOrderScreen.js';
 import OrderScreen from './screens/OrderScreen.js';
 import ProfileScreen from './screens/ProfileScreen.js';
 
+
 import AdminRoute from "./components/AdminRoute.js"
 import OrderListScreen from "./screens/admin/OrderListScreen.js"
 import ProductListScreen from './screens/admin/ProductListScreen.js';
@@ -41,6 +42,8 @@ import MerchantProductListScreen from './screens/merchant/MerchantProductListScr
 import MerchantProductEditScreen from './screens/merchant/MerchantProductEditScreen.js';
 
 
+
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<App/>}>
@@ -52,6 +55,8 @@ const router = createBrowserRouter(
       <Route path='/cart' element={<CartScreen/>} />
       <Route path='/login' element={<LoginScreen/>} />
       <Route path='/register' element={<RegisterScreen/>} />
+
+
      
 
       <Route path='' element={<PrivateRoute/>}>

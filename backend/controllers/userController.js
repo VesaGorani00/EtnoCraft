@@ -36,7 +36,7 @@ const authUser = asyncHandler(async (req, res ) => {
 //@access Public
 
 const registerUser = asyncHandler(async (req, res ) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, isMerchant } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -49,7 +49,7 @@ const registerUser = asyncHandler(async (req, res ) => {
         name,
         email,
         password,
-        isMerchant: isMerchant || false
+        isMerchant: isMerchant || false  // Set default to false if not provided
     });
 
     if(user) {
@@ -67,6 +67,7 @@ const registerUser = asyncHandler(async (req, res ) => {
         throw new Error('Invalid user data');
     }
 });
+
 
 
 // @decs Logout user clear cookie
