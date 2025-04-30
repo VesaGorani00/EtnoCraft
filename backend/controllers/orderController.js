@@ -132,12 +132,34 @@ const getOrders = asyncHandler(async (req, res ) => {
     res.status(200).json(orders)
 })
 
-const getMerchantOrders = asyncHandler(async (req, res ) => {
+const getMerchantOrders = asyncHandler(async (req, res) => {
     const decoded = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
 
-    const orders = await Order.find({user: decoded.userId}).populate("user","id name")
-    res.status(200).json(orders)
-})
+    // Find all orders that contain at least one product created by this merchant
+    const orders = await Order.find({
+        'orderItems': {
+            $elemMatch: {
+                // We can't directly filter by product.user here, so we fetch all and filter after populate
+                product: { $exists: true }
+            }
+        }
+    })
+    .populate('user', 'id name')
+    .populate({
+        path: 'orderItems.product',
+        select: 'user name', // Select user field from product
+        model: 'Product'
+    });
+
+    // Filter orders where at least one product in orderItems belongs to this merchant
+    const merchantOrders = orders.filter(order =>
+        order.orderItems.some(item => 
+            item.product && item.product.user.toString() === decoded.userId
+        )
+    );
+
+    res.status(200).json(merchantOrders);
+});
 
 
 export {
