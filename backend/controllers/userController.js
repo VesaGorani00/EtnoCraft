@@ -146,6 +146,23 @@ const getUsers = asyncHandler(async (req, res ) => {
 });
 
 
+// @desc Get users who are merchants
+// @Route GET /api/users/merchants
+// @access Private/Admin
+
+const getMerchants = asyncHandler(async (req, res) => {
+    // Fetch users where isMerchant is true
+    console.log('getMerchants route hit');
+    const merchants = await User.find({ isMerchant: true });
+
+    if (!merchants) {
+        res.status(404).json({ message: "No merchants found" });
+    } else {
+        res.status(200).json(merchants);
+    }
+});
+
+
 // @decs Get user by ID
 // @Route GET/api/users/:id
 //@access Private/Admin
@@ -220,5 +237,6 @@ export {
     getUsers,
     deleteUser,
     getUserByID,
-    updateUser
+    updateUser,
+    getMerchants, // Export the new getMerchants method
 };

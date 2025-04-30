@@ -8,3 +8,4 @@ export const ORDERS_URL = '/api/orders';
 export const ORDER_MERCHANTS_URL = '/api/orders/merchant';
 export const PAYPAL_URL = '/api/config/paypal'; 
 export const UPLOAD_URL = '/api/upload';
+export const ALL_MERCHANTS_URL = '/api/users/merchants'; // New constant for all merchants

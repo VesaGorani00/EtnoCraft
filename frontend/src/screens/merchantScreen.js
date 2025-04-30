@@ -1,96 +1,73 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { Form, Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import Rating from '../components/Rating';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import Meta from '../components/Meta';
-import { useGetProductDetailsQuery, useCreateReviewMutation } from '../slices/productsApiSlice';
-import { addToCart } from '../slices/cartSlice';
-import logo from "../assets/logo.png"
-
+import React, { useState, useEffect } from 'react';
+import { Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Loader from '../components/Loader'; // Assuming you have a Loader component
+import Message from '../components/Message'; // Assuming you have a Message component
 
 const MerchantScreen = () => {
-  const { id: productId } = useParams();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [merchants, setMerchants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const [qty, setQty] = useState(1);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
+  useEffect(() => {
+    const fetchMerchants = async () => {
+      try {
+        const response = await axios.get('/api/users/merchants', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assuming JWT token stored in localStorage
+          },
+        });
+        setMerchants(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to load merchants');
+        setLoading(false);
+      }
+    };
 
-  const { data: product, isLoading, error, refetch } = useGetProductDetailsQuery(productId);
-  const [createReview, { isLoading: loadingProductReview }] = useCreateReviewMutation();
+    fetchMerchants();
+  }, []);
 
-  const { userInfo } = useSelector((state) => state.auth);
-
-  const addToCartHandler = () => {
-    dispatch(addToCart({ ...product, qty }));
-    navigate('/cart');
-  };
-
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      await createReview({ productId, rating, comment }).unwrap();
-      refetch();
-      toast.success('Review submitted');
-      setRating(0);
-      setComment('');
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
-    }
+  const handleMerchantClick = (id) => {
+    navigate(`/merchant/${id}`); // Redirect to merchant's detailed page
   };
 
   return (
-    <>
- <Card className='my-3 p-3 rounded product-card shadow-lg'>
-  {/* Static Product Image */}
-  <Link to='/product/static-product-id'>
-    <Card.Img
-      src='https://via.placeholder.com/300x200.png?text=Static+Product'
-      variant='top'
-      className='product-image'
-      alt='Static Product Name'
-    />
-  </Link>
-
-  <Card.Body className='d-flex flex-column'>
-    {/* Static Product Title */}
-    <Link to='/product/static-product-id' className='text-decoration-none'>
-      <Card.Title as='div' className='product-title mb-2'>
-        <strong>Static Product Name</strong>
-      </Card.Title>
-    </Link>
-
-    {/* Static Product Rating */}
-    <Card.Text as='div' className='product-rating mb-2'>
-      <Rating value={4} text='12 reviews' />
-    </Card.Text>
-
-    {/* Static Product Price */}
-    <Card.Text as='h3' className='product-price mb-3'>
-      $49.99
-    </Card.Text>
-
-    {/* Static Product Category */}
-    <Card.Text className='product-category text-muted mb-4'>
-      <strong>Category:</strong> Accessories
-    </Card.Text>
-
-    {/* Static Call-to-Action */}
-    <Link to='/product/static-product-id' className='btn btn-primary w-100 rounded-pill mt-auto'>
-      View Details
-    </Link>
-  </Card.Body>
-</Card>
-
-
-
-
-    </>
+    <div>
+      <h1>Merchants</h1>
+      {loading ? (
+        <Loader /> // Show loading spinner while fetching merchants
+      ) : error ? (
+        <Message variant='danger'>{error}</Message> // Display error if any
+      ) : (
+        <div className='merchant-cards-container'>
+          {merchants.length === 0 ? (
+            <Message variant='info'>No merchants available</Message>
+          ) : (
+            merchants.map((merchant) => (
+              <Card key={merchant._id} className='my-3 p-3 rounded product-card shadow-lg'>
+                <Card.Body className='d-flex flex-column'>
+                  <Card.Title as='div' className='mb-2'>
+                    <strong>{merchant.name}</strong>
+                  </Card.Title>
+                  <Card.Text as='div' className='mb-3'>
+                    Merchant ID: {merchant._id}
+                  </Card.Text>
+                  <Button
+                    variant='primary'
+                    onClick={() => handleMerchantClick(merchant._id)}
+                  >
+                    View Details
+                  </Button>
+                </Card.Body>
+              </Card>
+            ))
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 
