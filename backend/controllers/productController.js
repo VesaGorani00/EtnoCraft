@@ -161,6 +161,20 @@ const getMerchantProducts = asyncHandler(async (req, res) => {
     res.json(products);
 });
 
+// @Route GET /api/products/merchant/:id
+// @access Public or Private/Admin (depending on your use case)
+const getMerchantProductsById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const products = await Product.find({ user: id });
+  
+    if (products.length === 0) {
+      res.status(404);
+      throw new Error("No products found for this merchant");
+    }
+  
+    res.json(products);
+  });
+
 export {
     getProductById, 
     getProducts, 
@@ -170,4 +184,5 @@ export {
     createProductReview,
     getTopProducts,
     getMerchantProducts,
+    getMerchantProductsById
 };

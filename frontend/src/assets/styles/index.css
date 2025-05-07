@@ -165,4 +165,12 @@ table th {
   }
   
 
- 
+ .card-hover {
+  border-color: 1px solid #c0bfbf;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}

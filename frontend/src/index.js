@@ -21,6 +21,8 @@ import ProductScreen from "./screens/productScreen.js"
 import CartScreen from "./screens/cartScreen.js"
 
 import MerchantScreen from "./screens/merchantScreen.js"
+import MerchantProductScreen from './components/MerchantProductScreen'; // Import new screen
+
 
 import LoginScreen from './screens/LoginScreen.js';
 import RegisterScreen from './screens/RegisterScreen.js';
@@ -44,6 +46,9 @@ import MerchantOrderListScreen from "./screens/merchant/MerchantOrderListScreen.
 import MerchantProductListScreen from './screens/merchant/MerchantProductListScreen.js';
 import MerchantProductEditScreen from './screens/merchant/MerchantProductEditScreen.js';
 
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
 
 
 
@@ -59,6 +64,7 @@ const router = createBrowserRouter(
       <Route path='/login' element={<LoginScreen/>} />
       <Route path='/register' element={<RegisterScreen/>} />
       <Route path='/merchant' element={<MerchantScreen/>} />
+      <Route path='/merchant/:id/products' element={<MerchantProductScreen/>} /> {/* New route for merchant's products */}
 
      
 

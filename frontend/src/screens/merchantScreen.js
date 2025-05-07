@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import Loader from '../components/Loader'; // Assuming you have a Loader component
-import Message from '../components/Message'; // Assuming you have a Message component
+import React, { useState, useEffect } from "react";
+import { Card, Button, Row, Col, Container } from "react-bootstrap";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
+import Loader from "../components/Loader";
+import Message from "../components/Message";
 
 const MerchantScreen = () => {
   const navigate = useNavigate();
   const [merchants, setMerchants] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchMerchants = async () => {
       try {
-        const response = await axios.get('/api/users/merchants', {
+        const response = await axios.get("/api/users/merchants", {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assuming JWT token stored in localStorage
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         setMerchants(response.data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to load merchants');
+        setError("Failed to load merchants");
         setLoading(false);
       }
     };
@@ -30,44 +30,45 @@ const MerchantScreen = () => {
     fetchMerchants();
   }, []);
 
-  const handleMerchantClick = (id) => {
-    navigate(`/merchant/${id}`); // Redirect to merchant's detailed page
-  };
-
   return (
-    <div>
-      <h1>Merchants</h1>
+    <Container className="py-4">
+      <h1 className="text-center mb-4">Merchants</h1>
       {loading ? (
-        <Loader /> // Show loading spinner while fetching merchants
+        <Loader />
       ) : error ? (
-        <Message variant='danger'>{error}</Message> // Display error if any
+        <Message variant="danger">{error}</Message>
+      ) : merchants.length === 0 ? (
+        <Message variant="info">No merchants available</Message>
       ) : (
-        <div className='merchant-cards-container'>
-          {merchants.length === 0 ? (
-            <Message variant='info'>No merchants available</Message>
-          ) : (
-            merchants.map((merchant) => (
-              <Card key={merchant._id} className='my-3 p-3 rounded product-card shadow-lg'>
-                <Card.Body className='d-flex flex-column'>
-                  <Card.Title as='div' className='mb-2'>
-                    <strong>{merchant.name}</strong>
-                  </Card.Title>
-                  <Card.Text as='div' className='mb-3'>
-                    Merchant ID: {merchant._id}
+        <Row className="g-4">
+          {merchants.map((merchant) => (
+            <Col key={merchant._id} sm={12} md={6} lg={4}>
+              <Card className="my-3 p-3 rounded product-card shadow-lg h-100">
+             
+
+                <Card.Body className="d-flex flex-column">
+              
+
+                  {/* Merchant ID */}
+                  <Card.Text className="text-muted small mb-2">
+                    <strong>ID:</strong> {merchant._id}
                   </Card.Text>
-                  <Button
-                    variant='primary'
-                    onClick={() => handleMerchantClick(merchant._id)}
+
+
+                  {/* Call-to-Action */}
+                  <Link
+                    to={`/merchant/${merchant._id}/products`}
+                    className="btn btn-primary w-100 rounded-pill mt-auto"
                   >
-                    View Details
-                  </Button>
+                    View Products
+                  </Link>
                 </Card.Body>
               </Card>
-            ))
-          )}
-        </div>
+            </Col>
+          ))}
+        </Row>
       )}
-    </div>
+    </Container>
   );
 };
 
