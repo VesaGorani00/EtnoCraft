@@ -36,7 +36,7 @@ const authUser = asyncHandler(async (req, res ) => {
 //@access Public
 
 const registerUser = asyncHandler(async (req, res ) => {
-    const { name, email, password, isMerchant } = req.body;
+    const { name, email, password, isMerchant, image  } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -44,12 +44,15 @@ const registerUser = asyncHandler(async (req, res ) => {
         res.status(400);
         throw new Error('User already exists');
     }
+    
 
     const user = await User.create({
         name,
         email,
         password,
-        isMerchant: isMerchant || false  // Set default to false if not provided
+        isMerchant: isMerchant ,
+        image: image || "", 
+        
     });
 
     if(user) {
@@ -61,6 +64,8 @@ const registerUser = asyncHandler(async (req, res ) => {
             email: user.email,
             isAdmin: user.isAdmin,
             isMerchant: user.isMerchant,
+            image: user.image, 
+            
         });
     } else {
         res.status(400);
@@ -120,6 +125,10 @@ const updateUserProfile = asyncHandler(async (req, res ) => {
             user.password = req.body.password;
         }
 
+        if(req.body.image) {
+            user.image = req.body.image;  // Assuming the image is a URL or path
+        }
+
         const updatedUser = await user.save();
 
         res.status(200).json({
@@ -128,6 +137,7 @@ const updateUserProfile = asyncHandler(async (req, res ) => {
             email: updatedUser.email,
             isAdmin: updatedUser.isAdmin,
             isMerchant: updatedUser.isMerchant,
+            image: updatedUser.image
         });
     } else {
         res.status(404);
@@ -204,28 +214,34 @@ const deleteUser = asyncHandler(async (req, res ) => {
 // @Route PUT/api/users/:id
 //@access Private/Admin
 
-const updateUser = asyncHandler(async (req, res ) => {
+const updateUser = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
-
-    if(user){
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-        user.isAdmin = Boolean(req.body.isAdmin);
-        user.isMerchant = Boolean(req.body.isMerchant);
-
-        const updatedUser = await user.save();
-        res.status(200).json({
-            _id: updatedUser._id,
-            name: updatedUser.name,
-            email: updatedUser.email,
-            isAdmin: updatedUser.isAdmin,
-            isMerchant: updatedUser.isMerchant
-        });
-    }else{
-        res.status(404);
-        throw new Error('User not found');
+  
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      user.isAdmin = Boolean(req.body.isAdmin);
+      user.isMerchant = Boolean(req.body.isMerchant);
+  
+      // ✅ FIX: allow image updates
+      if (req.body.image) {
+        user.image = req.body.image;
+      }
+  
+      const updatedUser = await user.save();
+      res.status(200).json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        isAdmin: updatedUser.isAdmin,
+        isMerchant: updatedUser.isMerchant,
+        image: updatedUser.image, // Include image in response
+      });
+    } else {
+      res.status(404);
+      throw new Error('User not found');
     }
-});
+  });
 
 
 export {

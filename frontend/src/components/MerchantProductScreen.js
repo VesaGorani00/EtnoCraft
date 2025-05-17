@@ -35,7 +35,7 @@ const MerchantProductScreen = () => {
 
   return (
     <Container className="py-4">
-      <h2 className="text-center mb-4">Merchant Products</h2>
+      <h2 className="text-center mb-4">Products</h2>
       <Row className="g-4">
         {products.length > 0 ? (
           products.map((product) => (

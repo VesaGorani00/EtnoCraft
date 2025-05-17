@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Table, Form, Button, Row, Col, Card } from "react-bootstrap";
+import { Table, Form, Button, Row, Col, Card, Image } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import Message from "../components/Message.js";
 import Loader from "../components/Loader.js";
 import { FaTimes } from 'react-icons/fa';
-import { useProfileMutation } from "../slices/usersApiSlice.js";
+import { useProfileMutation, useUploadUserImageMutation } from "../slices/usersApiSlice.js";
 import { setCredentials } from "../slices/authSlice.js";
 import { useGetMyOrdersQuery } from '../slices/ordersApiSlice.js';
 
@@ -15,17 +15,21 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  const [image, setImage] = useState('');
+  
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
 
   const [updateProfile, { isLoading: loadingUpdateProfile }] = useProfileMutation();
+  const [uploadUserImage, { isLoading: loadingUpload }] = useUploadUserImageMutation();
+  
   const { data: orders, isLoading, error } = useGetMyOrdersQuery();
 
   useEffect(() => {
     if (userInfo) {
       setName(userInfo.name);
       setEmail(userInfo.email);
+      setImage(userInfo.image || ""); // Set the current image
     }
   }, [userInfo]);
 
@@ -42,9 +46,22 @@ const ProfileScreen = () => {
         name,
         email,
         password,
+        image, // Include the updated image
       }).unwrap();
       dispatch(setCredentials(res));
       toast.success('Profile updated successfully');
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const uploadFileHandler = async (e) => {
+    const formData = new FormData();
+    formData.append('image', e.target.files[0]);
+    try {
+      const res = await uploadUserImage(formData).unwrap();
+      toast.success(res.message);
+      setImage(res.image); // Update the image with the uploaded URL
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -56,6 +73,21 @@ const ProfileScreen = () => {
         <Card className="shadow-sm p-4 rounded-4">
           <h3 className="text-center fw-bold mb-4">User Profile</h3>
           <Form onSubmit={submitHandler}>
+            {/* User Image */}
+            <Form.Group controlId="image" className="mb-3 text-center">
+              <Form.Label>Profile Image</Form.Label>
+              {image ? (
+                <Image src={image} alt="Profile" roundedCircle fluid className="mb-3" style={{ maxWidth: '150px' }} />
+              ) : (
+                <div>No image uploaded</div>
+              )}
+              <Form.Control
+                type="file"
+                label="Choose file"
+                onChange={uploadFileHandler}
+              />
+            </Form.Group>
+
             <Form.Group controlId="name" className="mb-3">
               <Form.Label>Name</Form.Label>
               <Form.Control

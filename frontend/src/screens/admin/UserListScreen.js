@@ -1,6 +1,6 @@
 import React from 'react'
 import { LinkContainer } from "react-router-bootstrap"
-import { Table, Button } from "react-bootstrap"
+import { Table, Button, Image } from "react-bootstrap"
 import { FaTimes, FaTrash, FaEdit, FaCheck } from "react-icons/fa"
 import Message from "../../components/Message.js"
 import Loader from "../../components/Loader.js"
@@ -9,7 +9,6 @@ import { useGetUsersQuery, useDeleteUserMutation } from '../../slices/usersApiSl
 
 const UserListScreen = () => {
   const { data: users, refetch, isLoading, error } = useGetUsersQuery()
-
   const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation()
 
   const deleteHandler = async (id) => {
@@ -34,6 +33,7 @@ const UserListScreen = () => {
             <thead>
               <tr>
                 <th>ID</th>
+                <th>Image</th> {/* Added Image column */}
                 <th>NAME</th>
                 <th>EMAIL</th>
                 <th>ADMIN</th>
@@ -45,6 +45,19 @@ const UserListScreen = () => {
               {users.map((user) => (
                 <tr key={user._id}>
                   <td>{user._id}</td>
+                  <td>
+                    {user.image ? (
+                      <Image
+                        src={user.image} // Assuming the image URL is stored in 'user.image'
+                        alt="User"
+                        roundedCircle
+                        width={40}
+                        height={40}
+                      />
+                    ) : (
+                      <FaTimes style={{ color: "red" }} />
+                    )}
+                  </td>
                   <td>{user.name}</td>
                   <td><a href={`mailto:${user.email}`}>{user.email}</a></td>
                   <td>

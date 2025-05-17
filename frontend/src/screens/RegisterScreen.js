@@ -12,6 +12,8 @@ const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isMerchant, setIsMerchant] = useState(false);
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,7 +39,7 @@ const RegisterScreen = () => {
     }
 
     try {
-      const res = await register({ name, email, password }).unwrap();
+      const res = await register({ name, email, password, isMerchant  }).unwrap();
       dispatch(setCredentials({ ...res }));
       navigate(redirect);
     } catch (err) {
@@ -95,6 +97,15 @@ const RegisterScreen = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
               </Form.Group>
+
+              <Form.Group controlId="isMerchant" className="mb-3">
+  <Form.Check
+    type="checkbox"
+    label="Register as Merchant"
+    checked={isMerchant}
+    onChange={(e) => setIsMerchant(e.target.checked)}
+  />
+</Form.Group>
 
               <Button
                 type="submit"

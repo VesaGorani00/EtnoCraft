@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Row, Col, Container } from "react-bootstrap";
+import { Card, Row, Col, Container, Image } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Loader from "../components/Loader";
@@ -44,16 +44,36 @@ const MerchantScreen = () => {
           {merchants.map((merchant) => (
             <Col key={merchant._id} sm={12} md={6} lg={4}>
               <Card className="my-3 p-3 rounded product-card shadow-lg h-100">
-             
-
                 <Card.Body className="d-flex flex-column">
-              
+                  {/* Display Merchant Image (from user image) */}
+                  <div className="text-center mb-3">
+                    {merchant.image ? (
+                      <Image
+                        src={merchant.image}
+                        alt={merchant.name}
+                        roundedCircle
+                        fluid
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      <div>No image available</div>
+                    )}
+                  </div>
 
                   {/* Merchant ID */}
-                  <Card.Text className="text-muted small mb-2">
+                  {/* <Card.Text className="text-muted small mb-2">
                     <strong>ID:</strong> {merchant._id}
-                  </Card.Text>
+                  </Card.Text> */}
 
+                  {/* Merchant Name */}
+                  <div className="text-center">
+                  <Card.Title>{merchant.name}</Card.Title>
+                  </div>
+                  
 
                   {/* Call-to-Action */}
                   <Link
